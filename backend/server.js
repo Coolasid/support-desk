@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 //user controllers
 const userCont = require('./controllers/userCont');
 
-app.use('/api/users', userCont);
+app.use('/api/users',   userCont);
 
 app.use(errorHandler);
 

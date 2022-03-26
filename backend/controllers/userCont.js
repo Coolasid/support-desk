@@ -3,6 +3,9 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
+const jwt = require('jsonwebtoken');
+const { protect } = require('../middleware/authMiddleware');
+
 
 // register a new user => /api/users/register
 router.post(
@@ -40,6 +43,7 @@ router.post(
         _id: user._id,
         name: user.name,
         email: user.email,
+        token: generateToken(user._id),
       });
     } else {
       res.status(400);
@@ -62,6 +66,7 @@ router.post(
         _id: user._id,
         name: user.name,
         email: user.email,
+        token: generateToken(user._id),
       });
     } else {
       res.status(401);
@@ -69,5 +74,26 @@ router.post(
     }
   })
 );
+
+
+
+// get current user => /me
+router.get("/me", protect, asyncHandler(async(req, res)=>{
+    const user = {
+        id: req.user._id,
+        email: req.user.email,
+        name: req.user.name
+    }
+   res.status(200).json(user)
+}))
+
+
+//Genrate token
+
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: '30d',
+  });
+};
 
 module.exports = router;
