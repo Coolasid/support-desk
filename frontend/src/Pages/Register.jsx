@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { FaUser, FaEye } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { register } from '../redux/auth/authSlice';
+import {useSelector, useDispatch} from "react-redux"
 
 export const Register = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +12,9 @@ export const Register = () => {
     password2: '',
   });
   const [show, setShow] = useState(false);
+  const dispatch = useDispatch()
+  const { user, isLoading, isSuccess, message } = useSelector(state => state.auth)
+
 
   const { name, email, password, password2 } = formData;
 
@@ -23,22 +28,28 @@ export const Register = () => {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    
+    if (password !== password2) {
+      toast.error('passwords do not match');
+    } else {
+      let userData = {
+        name,
+        email,
+        password,
+      };
 
-    if(password !== password2){
-        toast.error("passwords do not match")
+     dispatch(register(userData))
+      
     }
-    console.log(formData);
   };
 
   return (
     <>
       <section className="heading">
         <h1>
-          <FaUser></FaUser> Register
+          <FaUser></FaUser> Register {user}
         </h1>
 
-        <p>Please create an account</p>
+        <p>Please create an account </p>
       </section>
 
       <section className="form">
@@ -88,7 +99,7 @@ export const Register = () => {
               name="password2"
               onChange={onChange}
               placeholder="Please confirm your password"
-              required 
+              required
             />
           </div>
           <div className="form-group">
